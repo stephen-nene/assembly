@@ -1,0 +1,30 @@
+# Compiled files
+*.o
+*.out
+*.elf
+*.bin
+*.hex
+
+# Executables
+a.out
+*.exe
+compile.sh
+run.sh
+
+# Object files
+*.obj
+
+# Dependency files
+*.d
+
+# IDE-specific files
+.vscode/
+
+# Temporary files
+*~
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+*.c
