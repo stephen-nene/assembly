@@ -28,3 +28,5 @@ run.sh
 Thumbs.db
 
 *.c
+
+./street-crossing
