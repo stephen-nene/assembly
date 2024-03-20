@@ -1,36 +1,55 @@
-# Function to print each element of the array with its index position
+.data
+array:   .word   10, 11, 12, 13, 14, 15    # Array to use
+len:     .word   6                         # Length of array
+sum_msg: .string "Sum is "                 # Message to print before the sum
+mean_msg: .string "Mean is "               # Message to print before the mean
+
 .text
-print_array:
-    # Save necessary registers to the stack
-    addi sp, sp, -8     # Allocate space on the stack
-    sw ra, 4(sp)        # Save return address
-    sw s0, 0(sp)        # Save s0 register
+.globl  main
 
-    # Initialize loop counter and array pointer
-    li s0, 0            # Loop counter
-    la t0, array        # Load address of array into t0
+main:
+    # Save registers to stack
+    addi    sp, sp, -16      # Make room on stack
+    sw      ra, 0(sp)        # Save return address
+    sw      s0, 4(sp)        # Save s0 register
+    sw      s1, 8(sp)        # Save s1 register
 
-loop:
-    bge s0, x6, end     # If loop counter >= array length, exit loop
+    # Load array and length
+    la      s0, array        # Load base address of array
+    lw      s1, len          # Load length of array
 
-    # Print index and value
-    mv a0, s0           # Move index to argument register
-    ecall               # Print index
-    lw a0, 0(t0)        # Load array element into a0
-    ecall               # Print value
-    li a0, '\n'         # Load newline character into a0
-    ecall               # Print newline
+    # Initialize sum
+    li      t0, 0            # Sum register
+    
 
-    # Increment loop counter and array pointer
-    addi s0, s0, 1      # Increment loop counter
-    addi t0, t0, 4      # Move to the next element of the array
 
-    j loop              # Jump back to loop
+sum:
+    lw      t1, 0(s0)        # Load current element
+    add     t0, t0, t1       # Add current element to sum
+    addi    s0, s0, 4        # Move to next element
+    addi    s1, s1, -1       # Decrement loop counter
+    bnez    s1, sum     # Branch if not zero
 
-end:
-    # Restore saved registers
-    lw s0, 0(sp)        # Restore s0 register
-    lw ra, 4(sp)        # Restore return address
-    addi sp, sp, 8      # Deallocate space on the stack
+    # Print the message "Sum is"
+    la      a0, sum_msg      # Load address of the sum message
+    li      a7, 4            # System call code for printing string
+    ecall
 
-    ret
+    # Print the sum
+    mv      a0, t0           # Load sum into argument register
+    li      a7, 1            # System call code for printing integer
+    ecall
+
+    # Restore registers from stack
+    lw      ra, 0(sp)        # Restore return address
+    lw      s0, 4(sp)        # Restore s0 register
+    lw      s1, 8(sp)        # Restore s1 register
+    addi    sp, sp, 16       # Restore stack pointer
+
+    # Exit program
+    li      a0, 0            # Exit code
+    li      a7, 93           # System call code for exit
+    ecall
+
+
+mean:
